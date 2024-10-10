@@ -1,0 +1,819 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/posts/": {
+      "get": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Get Posts",
+        "operationId": "listPosts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "type": "array",
+                  "title": "Response Listposts"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Create Post",
+        "operationId": "createPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "get": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Get Post",
+        "operationId": "getPost",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Post Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Update Post",
+        "operationId": "replacePost",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Post Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Delete Post",
+        "operationId": "deletePost",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Post Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Get Contacts",
+        "operationId": "listContacts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Contact"
+                  },
+                  "type": "array",
+                  "title": "Response Listcontacts"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Create Contact",
+        "operationId": "createContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContact"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{contact_id}": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Get Contact",
+        "operationId": "getContact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Update Contact",
+        "operationId": "updateContact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tg/set-webhook": {
+      "get": {
+        "tags": [
+          "telegram"
+        ],
+        "summary": "Set Webhook",
+        "operationId": "set_webhook_tg_set_webhook_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tg/webhook-info": {
+      "get": {
+        "tags": [
+          "telegram"
+        ],
+        "summary": "Info Webhook",
+        "operationId": "info_webhook_tg_webhook_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tg/webhook": {
+      "post": {
+        "tags": [
+          "telegram"
+        ],
+        "summary": "Webhook",
+        "operationId": "webhook_tg_webhook_post",
+        "parameters": [
+          {
+            "name": "X-Telegram-Bot-Api-Secret-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Telegram-Bot-Api-Secret-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hh/": {
+      "get": {
+        "tags": [
+          "hh"
+        ],
+        "summary": "Get",
+        "operationId": "get_hh__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hh/auth": {
+      "get": {
+        "tags": [
+          "hh"
+        ],
+        "summary": "Auth",
+        "operationId": "auth_hh_auth_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/robots.txt": {
+      "get": {
+        "summary": "Robots",
+        "operationId": "robots_robots_txt_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Contact": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number"
+          },
+          "resume_url": {
+            "type": "string",
+            "title": "Resume Url"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "first_name",
+          "last_name",
+          "phone_number",
+          "resume_url",
+          "email"
+        ],
+        "title": "Contact"
+      },
+      "CreateContact": {
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number"
+          },
+          "resume_url": {
+            "type": "string",
+            "title": "Resume Url"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "first_name",
+          "last_name",
+          "phone_number",
+          "resume_url",
+          "email"
+        ],
+        "title": "CreateContact"
+      },
+      "CreatePost": {
+        "properties": {
+          "command": {
+            "type": "string",
+            "title": "Command"
+          },
+          "callback_query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callback Query"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "command",
+          "title",
+          "text"
+        ],
+        "title": "CreatePost"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Post": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "command": {
+            "type": "string",
+            "title": "Command"
+          },
+          "callback_query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callback Query"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "command",
+          "title",
+          "text"
+        ],
+        "title": "Post"
+      },
+      "UpdateContact": {
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number"
+          },
+          "resume_url": {
+            "type": "string",
+            "title": "Resume Url"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "first_name",
+          "last_name",
+          "phone_number",
+          "resume_url",
+          "email"
+        ],
+        "title": "UpdateContact"
+      },
+      "UpdatePost": {
+        "properties": {
+          "command": {
+            "type": "string",
+            "title": "Command"
+          },
+          "callback_query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callback Query"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "command",
+          "title",
+          "text"
+        ],
+        "title": "UpdatePost"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

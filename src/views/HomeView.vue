@@ -1,0 +1,145 @@
+<script setup lang="ts">
+import {ref} from 'vue'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import {faPenToSquare} from '@fortawesome/free-regular-svg-icons'
+import {onBeforeMount, onMounted, watch} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import type {AxiosResponse, AxiosError} from 'axios'
+import {PostsApi, Configuration} from '@/plugins/api-client'
+import {usePostStore} from '@/stores/posts'
+import {useToastStore} from '@/stores/toasts'
+import {RouteActionList} from '@/router/actions'
+import PostForm from '@/components/PostForm.vue'
+
+const router = useRouter()
+const route = useRoute()
+
+const loading = ref<boolean>(true)
+
+const post_store = usePostStore()
+const toasts = useToastStore()
+
+const post_api = new PostsApi(new Configuration({
+  basePath: import.meta.env.VITE_API_URL,
+}))
+
+const selected_id = ref<number>()
+
+onBeforeMount(async () => {
+  if (route.query.actions && route.query?.post_id) {
+    const post_id = Array.isArray(route.query?.post_id) ? route.query.post_id[0] : route.query.post_id
+    selected_id.value = post_id ? parseInt(post_id) : undefined
+  }
+
+  post_store.$reset()
+})
+
+onMounted(async () => {
+  try {
+    const {data} = await post_api.listPosts()
+    data.forEach(p => post_store.insert(p))
+
+    loading.value = false
+  } catch (err: any) {
+    if (err?.isAxiosError) {
+      const {request, response} = err as AxiosError
+
+      if (request) {
+        const {message, code} = err as AxiosError
+        toasts.error(`${code}: ${message ?? JSON.stringify(err)}`)
+      }
+
+      if (response) {
+        const {statusText, data} = response as AxiosResponse
+        toasts.error(`${statusText}: ${data?.detail ?? JSON.stringify(data)}`)
+      }
+
+      return
+    }
+
+    throw err
+  }
+})
+
+watch(selected_id, (value) => {
+  if (value) {
+    router.replace({query: {...route.query, actions: RouteActionList.EDIT_POST, post_id: value}})
+  }
+})
+
+watch(() => route.query?.actions, (check) => {
+  selected_id.value = check ? selected_id.value : undefined
+})
+
+const needle_text = ref<string>()
+
+const search_needle = () => alert('search needle')
+
+</script>
+
+<template>
+  <PostForm v-if="selected_id && route.query.actions?.includes(RouteActionList.EDIT_POST)" :post_id="selected_id"/>
+
+  <div class="container">
+    <form action="#" @submit.prevent="search_needle" class="mt-4">
+      <div class="input-group mb-3">
+        <input type="text" v-model.trim="needle_text" class="form-control" placeholder="Команда" aria-label="Команда" aria-describedby="search-input">
+        <button class="btn btn-outline-dark" type="submit" id="search-input" :disabled="!needle_text || needle_text?.length < 3">Искать</button>
+      </div>
+    </form>
+
+    <main class="mt-4" role="main">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        <template v-if="loading">
+          <div v-for="idx in 12" :key="idx" class="col">
+            <div class="card" aria-hidden="true">
+              <div class="card-body">
+                <h5 class="card-title placeholder-glow">
+                  <span class="placeholder col-6"></span>
+                </h5>
+                <p class="card-text placeholder-glow">
+                  <span class="placeholder col-7"></span>
+                  <span class="placeholder col-4"></span>
+                  <span class="placeholder col-4"></span>
+                  <span class="placeholder col-6"></span>
+                  <span class="placeholder col-8"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="post in post_store.posts" :key="post.id" class="col">
+            <div class="card">
+              <div class="card-body position-relative">
+                <div class="d-flex justify-content-between">
+                  <h5 class="card-title">{{ post.command }}</h5>
+                  <a href="#" @click.prevent="selected_id = post.id" class="stretched-link">
+                    <FontAwesomeIcon :icon="faPenToSquare"/>
+                  </a>
+                </div>
+
+                <p class="card-text text-truncate">{{ post.text.replace(/<[^>]*>/g, '') }}</p>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </main>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.stretched-link {
+  color: var(--bs-success);
+
+  &:hover {
+    color: var(--bs-danger);
+    background-color: transparent;
+
+    &::after {
+      background-color: hsla(160, 100%, 37%, 0.2);
+    }
+  }
+}
+</style>
