@@ -10,7 +10,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "sdk-generate": "openapi-generator-cli generate -g typescript-axios -i openapi.json -o src/plugins/api-client"
+    "openapi-sdk": "openapi-generator-cli generate"
   },
   "packageManager": "yarn@3.8.3",
   "dependencies": {

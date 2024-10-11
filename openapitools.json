@@ -2,6 +2,17 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "7.8.0"
+    "version": "7.8.0",
+    "generators": {
+      "kumaximbot-sdk": {
+        "generatorName": "typescript-axios",
+        "output": "#{cwd}/openapi/api-client",
+        "inputSpec": "openapi.json",
+        "additionalProperties": {
+          "npmName": "@kumaximbot/api-client",
+          "npmVersion": "1.0.0"
+        }
+      }
+    }
   }
 }

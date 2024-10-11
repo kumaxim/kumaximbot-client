@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@openapi': fileURLToPath(new URL('./openapi', import.meta.url)),
       '~bootstrap': resolve(__dirname, 'node_modules/bootstrap'),
     }
   }
