@@ -69,7 +69,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
       }
     },
     "/posts/{post_id}": {
@@ -122,6 +127,11 @@
         ],
         "summary": "Update Post",
         "operationId": "replacePost",
+        "security": [
+          {
+            "YandexID": []
+          }
+        ],
         "parameters": [
           {
             "name": "post_id",
@@ -172,6 +182,11 @@
         ],
         "summary": "Delete Post",
         "operationId": "deletePost",
+        "security": [
+          {
+            "YandexID": []
+          }
+        ],
         "parameters": [
           {
             "name": "post_id",
@@ -261,7 +276,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
       }
     },
     "/contacts/{contact_id}": {
@@ -311,6 +331,11 @@
         ],
         "summary": "Update Contact",
         "operationId": "updateContact",
+        "security": [
+          {
+            "YandexID": []
+          }
+        ],
         "parameters": [
           {
             "name": "contact_id",
@@ -354,73 +379,267 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Delete Contact",
+        "operationId": "deleteContact",
+        "security": [
+          {
+            "YandexID": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contact Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/tg/set-webhook": {
+    "/users/me": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Info",
+        "operationId": "getUserInfo",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
+      }
+    },
+    "/users/login/redirect": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Redirect",
+        "operationId": "redirectToAuthorize",
+        "responses": {
+          "303": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Login",
+        "operationId": "getOAuthToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth2Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/refresh": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Refresh",
+        "operationId": "refreshOAuthToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth2Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logout",
+        "operationId": "removeOAuth2Token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth2TokenRevoke"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
+      }
+    },
+    "/telegram/set-webhook": {
       "get": {
         "tags": [
           "telegram"
         ],
         "summary": "Set Webhook",
-        "operationId": "set_webhook_tg_set_webhook_get",
+        "operationId": "set_webhook_telegram_set_webhook_get",
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           }
-        }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
-    "/tg/webhook-info": {
+    "/telegram/webhook-info": {
       "get": {
         "tags": [
           "telegram"
         ],
         "summary": "Info Webhook",
-        "operationId": "info_webhook_tg_webhook_info_get",
+        "operationId": "info_webhook_telegram_webhook_info_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookInfo"
+                }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
       }
     },
-    "/tg/webhook": {
+    "/telegram/webhook": {
       "post": {
         "tags": [
           "telegram"
         ],
         "summary": "Webhook",
-        "operationId": "webhook_tg_webhook_post",
-        "parameters": [
-          {
-            "name": "X-Telegram-Bot-Api-Secret-Token",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Telegram-Bot-Api-Secret-Token"
-            }
-          }
-        ],
+        "operationId": "webhook_telegram_webhook_post",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -428,7 +647,8 @@
                 "title": "Update"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -449,16 +669,21 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
-    "/hh/": {
+    "/headhunter/": {
       "get": {
         "tags": [
-          "hh"
+          "headhunter"
         ],
         "summary": "Get",
-        "operationId": "get_hh__get",
+        "operationId": "get_headhunter__get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -468,16 +693,26 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "YandexID": []
+          }
+        ]
       }
     },
-    "/hh/auth": {
+    "/headhunter/auth": {
       "get": {
         "tags": [
-          "hh"
+          "headhunter"
         ],
         "summary": "Auth",
-        "operationId": "auth_hh_auth_get",
+        "operationId": "auth_headhunter_auth_get",
+        "security": [
+          {
+            "YandexID": []
+          }
+        ],
         "parameters": [
           {
             "name": "code",
@@ -675,6 +910,99 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "LoginBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "state"
+        ],
+        "title": "LoginBody"
+      },
+      "LogoutBody": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "LogoutBody"
+      },
+      "OAuth2Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in",
+          "refresh_token",
+          "scope"
+        ],
+        "title": "OAuth2Token"
+      },
+      "OAuth2TokenRevoke": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "ok"
+          }
+        },
+        "type": "object",
+        "title": "OAuth2TokenRevoke"
+      },
+      "Phone": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "number": {
+            "type": "string",
+            "title": "Number"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "number"
+        ],
+        "title": "Phone"
+      },
       "Post": {
         "properties": {
           "id": {
@@ -713,6 +1041,19 @@
           "text"
         ],
         "title": "Post"
+      },
+      "RefreshBody": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshBody"
       },
       "UpdateContact": {
         "properties": {
@@ -781,6 +1122,76 @@
         ],
         "title": "UpdatePost"
       },
+      "User": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "login": {
+            "type": "string",
+            "title": "Login"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "real_name": {
+            "type": "string",
+            "title": "Real Name"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex"
+          },
+          "default_email": {
+            "type": "string",
+            "title": "Default Email"
+          },
+          "emails": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Emails"
+          },
+          "default_phone": {
+            "$ref": "#/components/schemas/Phone"
+          },
+          "psuid": {
+            "type": "string",
+            "title": "Psuid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "login",
+          "client_id",
+          "display_name",
+          "real_name",
+          "first_name",
+          "last_name",
+          "sex",
+          "default_email",
+          "emails",
+          "default_phone",
+          "psuid"
+        ],
+        "title": "User"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -813,6 +1224,117 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WebhookInfo": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "has_custom_certificate": {
+            "type": "boolean",
+            "title": "Has Custom Certificate"
+          },
+          "pending_update_count": {
+            "type": "integer",
+            "title": "Pending Update Count"
+          },
+          "ip_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "last_error_date": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error Date"
+          },
+          "last_error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error Message"
+          },
+          "last_synchronization_error_date": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synchronization Error Date"
+          },
+          "max_connections": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Connections"
+          },
+          "allowed_updates": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Updates"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "url",
+          "has_custom_certificate",
+          "pending_update_count"
+        ],
+        "title": "WebhookInfo",
+        "description": "Describes the current status of a webhook.\n\nSource: https://core.telegram.org/bots/api#webhookinfo"
+      }
+    },
+    "securitySchemes": {
+      "YandexID": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "scopes": {},
+            "authorizationUrl": "https://oauth.yandex.ru/authorize",
+            "tokenUrl": "https://oauth.yandex.ru/token"
+          }
+        }
+      },
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Telegram-Bot-Api-Secret-Token"
       }
     }
   }
