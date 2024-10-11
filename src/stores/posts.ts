@@ -1,6 +1,6 @@
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
-import type {Post} from '@/plugins/api-client'
+import type {Post} from '@openapi/api-client'
 
 
 export const usePostStore = defineStore('posts', () => {
