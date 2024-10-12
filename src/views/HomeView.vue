@@ -6,7 +6,6 @@ import {useRoute, useRouter} from 'vue-router'
 import {BotAPIsList} from '@/symbols'
 import {usePostStore} from '@/stores/posts'
 import PostForm from '@/components/PostForm.vue'
-import {postForm} from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,6 +49,10 @@ onBeforeMount(async () => {
     selected_id.value = post_id ? parseInt(post_id) : undefined
   }
 
+  if (route.query.actions && route.query.text) {
+    needle_text.value = (Array.isArray(route.query.text) ? route.query.text[0] : route.query.text) ?? ''
+  }
+
   post_store.$reset()
 })
 
@@ -72,6 +75,12 @@ watch(selected_id, (value) => {
 
 watch(() => route.query?.actions, (check) => {
   selected_id.value = check ? selected_id.value : undefined
+})
+
+watch(needle_text, (needle) => {
+  if (needle && needle.length > 3) {
+    router.replace({query: {...route.query, actions: 'search', text: needle}})
+  }
 })
 </script>
 
