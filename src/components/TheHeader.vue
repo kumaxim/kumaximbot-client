@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {faArrowRightFromBracket, faArrowRightToBracket, faHouse, faSquarePlus} from '@fortawesome/free-solid-svg-icons'
-import {faCalendarDays} from '@fortawesome/free-regular-svg-icons'
+import {faCalendarDays, faAddressCard} from '@fortawesome/free-regular-svg-icons'
 import {faTelegramPlane, faYandex} from '@fortawesome/free-brands-svg-icons'
 import {Offcanvas} from 'bootstrap'
 import {inject, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
@@ -10,6 +10,7 @@ import type {User} from '@openapi/api-client'
 import {useAuthStore} from '@/stores/auth'
 import {BotAPIsList} from '@/symbols'
 import PostForm from '@/components/PostForm.vue'
+import ContactForm from '@/components/ContactForm.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -64,6 +65,7 @@ onUpdated(async () => {
 
 <template>
   <PostForm v-if="route.query && route.query.actions?.includes('post_add')" />
+  <ContactForm v-if="route.query && route.query.actions?.includes('contact')" />
 
   <nav class="navbar navbar-expand-lg bg-body-tertiary border border-bottom">
     <div class="container">
@@ -105,6 +107,14 @@ onUpdated(async () => {
                 <FontAwesomeIcon :icon="faCalendarDays"/>
                 <span class="ms-2 d-inline d-lg-none">Календарь интервью</span>
               </a>
+            </li>
+            <li class="nav-item">
+              <button type="button"
+                      @click.prevent="() => router.replace({query: {...route.query, actions: 'contact'}})"
+                      class="btn btn-outline-secondary">
+                <FontAwesomeIcon :icon="faAddressCard"/>
+                <span class="ms-2 d-inline d-lg-none">Контакты</span>
+              </button>
             </li>
             <li :class="[offcanvasBodyShow ? 'position-absolute bottom-0 end-0 p-2' : 'nav-item']">
               <a v-if="auth.isLoggedIn" href="https://id.yandex.ru/" target="_blank" class="btn btn-outline-dark">
