@@ -74,12 +74,17 @@ watch(selected_id, (value) => {
 })
 
 watch(() => route.query?.actions, (check) => {
-  selected_id.value = check ? selected_id.value : undefined
+  if (check === null || check === undefined) {
+    selected_id.value = undefined
+    needle_text.value = undefined
+  }
 })
 
 watch(needle_text, (needle) => {
-  if (needle && needle.length > 3) {
+  if (needle && needle.length >= 3) {
     router.replace({query: {...route.query, actions: 'search', text: needle}})
+  } else {
+    router.replace({query: {...route.query, actions: undefined, text: undefined}})
   }
 })
 </script>
