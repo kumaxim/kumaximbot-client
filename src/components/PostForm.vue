@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {onBeforeMount, onMounted, ref, inject} from 'vue'
+import {onBeforeMount, onMounted, ref, inject, watch} from 'vue'
 import {type TinyMCE} from 'tinymce'
 import TinyMCEditor from '@tinymce/tinymce-vue'
-import type {Post} from '@openapi/api-client'
+import {type Post, type Contact, PostType} from '@openapi/api-client'
 import {usePostStore} from '@/stores/posts'
 import {useToastStore} from '@/stores/toasts'
 import {BotAPIsList} from '@/symbols'
@@ -15,6 +15,9 @@ const props = defineProps<{
 const emits = defineEmits<{
   'update:post_id': [number | undefined]
 }>()
+
+const contacts = ref<Contact[]>()
+const documents = ref<string[]>()
 
 const posts = usePostStore()
 const toasts = useToastStore()
@@ -35,17 +38,39 @@ const editorConfig: Parameters<TinyMCE['init']>[0] = {
   branding: false,
 }
 
+watch(() => singlePost.value.type, async (postType) => {
+  loading.value = true
+
+  if (postType === PostType.Document) {
+    try {
+      const {data: assetList} = await apis!.defaults.listServerAssets()
+      documents.value = assetList
+    } finally {
+      loading.value = false
+    }
+  }
+
+  if (postType === PostType.Contact) {
+    try {
+      const {data: contactList} = await apis!.contacts.listContacts()
+      contacts.value = contactList
+    } finally {
+      loading.value = false
+    }
+  }
+})
+
 onBeforeMount(async () => {
   loading.value = true
 
   if (props.post_id) {
     try {
-      const {data} = await apis!.posts.getPost(props.post_id)
-      singlePost.value = data
+      const {data: postList} = await apis!.posts.getPost(props.post_id)
+      singlePost.value = postList
     } catch (err: any) {
       emits('update:post_id', undefined)
     } finally {
-      loading.value = false
+      loading.value = singlePost.value.type !== PostType.Text
     }
   }
 })
@@ -150,6 +175,14 @@ const post_remove = async () => {
                :disabled="loading">
       </div>
       <div class="mb-2">
+        <label for="bot-command-type-label" class="form-label">Тип сообщения</label>
+        <select v-model="singlePost.type" class="form-select" id="bot-command-type-label" :disabled="loading">
+          <option :value="PostType.Text">Пост</option>
+          <option :value="PostType.Contact">Контакт</option>
+          <option :value="PostType.Document">Документ</option>
+        </select>
+      </div>
+      <div class="mb-2">
         <label for="bot-title-label" class="form-label">Заголовок</label>
         <input type="text"
                v-model.trim="singlePost.title"
@@ -157,7 +190,7 @@ const post_remove = async () => {
                id="bot-title-label"
                :disabled="loading">
       </div>
-      <div class="mb-2">
+      <div v-if="singlePost.type === PostType.Text" class="mb-2">
         <label for="bot-command-textarea" class="form-label">Содержание</label>
         <TinyMCEditor
             id="bot-command-textarea"
@@ -169,7 +202,22 @@ const post_remove = async () => {
             @init="loading = false"
         />
       </div>
-      <div class="d-flex justify-content-between align-items-center">
+      <div v-if="singlePost.type === PostType.Contact" class="mb-2">
+        <label for="bot-contact-list-label" class="form-label">Контакты</label>
+        <select v-model="singlePost.text" class="form-select" id="bot-contact-list-label" :disabled="loading">
+          <option value="" disabled>Выберите документ</option>
+          <option v-for="contact in contacts" :key="contact.id" :value="String(contact.id)">
+            #{{ [contact.id, contact.first_name, contact.last_name].join(' ') }}
+          </option>
+        </select>
+      </div>
+      <div v-if="singlePost.type === PostType.Document" class="mb-2">
+        <label for="bot-document-list-label" class="form-label">Документы</label>
+        <select v-model="singlePost.text" class="form-select" id="bot-document-list-label" :disabled="loading">
+          <option v-for="filename in documents" :key="filename" :value="filename">{{ filename }}</option>
+        </select>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-4">
         <button type="button"
                 @click.prevent="is_remove = true"
                 class="btn"

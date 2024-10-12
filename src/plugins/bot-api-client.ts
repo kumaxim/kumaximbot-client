@@ -7,7 +7,8 @@ import {
     Configuration,
     ContactsApi,
     PostsApi,
-    UsersApi
+    UsersApi,
+    DefaultApi,
 } from '@openapi/api-client'
 
 export default {
@@ -44,6 +45,7 @@ export default {
             posts: new PostsApi(config),
             users: new UsersApi(config),
             contacts: new ContactsApi(config),
+            defaults: new DefaultApi(config)
         })
     }
 }
