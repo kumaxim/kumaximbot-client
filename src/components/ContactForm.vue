@@ -40,7 +40,7 @@ onBeforeMount(async () => {
     const {data} = await apis!.contacts.listContacts()
 
     if (data.length === 0) {
-      toasts.error('Не удалось получить список контактов')
+      toasts.error('Не найдено ни одного контакта')
 
       loading.value = false
       is_open.value = undefined
