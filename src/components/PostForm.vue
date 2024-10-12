@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import {onBeforeMount, onMounted, ref} from 'vue'
+import {onBeforeMount, onMounted, ref, inject} from 'vue'
 import {type TinyMCE} from 'tinymce'
 import TinyMCEditor from '@tinymce/tinymce-vue'
 import type {AxiosResponse, AxiosError} from 'axios'
-import {Configuration, type Post, PostsApi} from '@openapi/api-client'
+import type {Post} from '@openapi/api-client'
 import {usePostStore} from '@/stores/posts'
 import {useToastStore} from '@/stores/toasts'
+import {BotAPIsList} from '@/symbols'
 import Modal from '@/components/twbs/Modal.vue'
 
 const props = defineProps<{
@@ -21,9 +22,7 @@ const is_open = ref<boolean | undefined>(true)
 const is_remove = ref<boolean>(false)
 const singlePost = ref<Post>({id: 0, command: '', title: '', text: ''})
 
-const api = new PostsApi(new Configuration({
-  basePath: import.meta.env.VITE_API_URL
-}))
+const apis = inject(BotAPIsList)
 
 const editorConfig: Parameters<TinyMCE['init']>[0] = {
   plugins: ['lists', 'link', 'image', 'table', 'code', 'charmap', 'preview', 'fullscreen'],
@@ -36,7 +35,7 @@ const editorConfig: Parameters<TinyMCE['init']>[0] = {
 onBeforeMount(async () => {
   if (props.post_id) {
     try {
-      const {data} = await api.getPost(props.post_id)
+      const {data} = await apis!.posts.getPost(props.post_id)
       singlePost.value = data
     } catch (err: any) {
       if (err?.isAxiosError) {
@@ -66,7 +65,7 @@ onMounted(() => {
 })
 
 const create = async () => {
-  const {data} = await api.createPost({...singlePost.value})
+  const {data} = await apis!.posts.createPost({...singlePost.value})
 
   is_open.value = undefined
 
@@ -81,7 +80,7 @@ const update = async () => {
     throw Error('Невозможно обновить пост. Отсутствует параметр ?post_id')
   }
 
-  const {data} = await api.replacePost(props.post_id, {...singlePost.value})
+  const {data} = await apis!.posts.replacePost(props.post_id, {...singlePost.value})
 
   is_open.value = undefined
 
@@ -120,7 +119,7 @@ const post_remove = async () => {
   loading.value = true
 
   try {
-    await api.deletePost(props.post_id)
+    await apis!.posts.deletePost(props.post_id)
 
     is_open.value = undefined
 

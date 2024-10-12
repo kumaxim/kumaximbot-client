@@ -1,27 +1,23 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {inject, onBeforeMount, onMounted, ref, watch} from 'vue'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {faPenToSquare} from '@fortawesome/free-regular-svg-icons'
-import {onBeforeMount, onMounted, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import type {AxiosResponse, AxiosError} from 'axios'
-import {PostsApi, Configuration} from '@/plugins/api-client'
+import type {AxiosError, AxiosResponse} from 'axios'
+import {BotAPIsList} from '@/symbols'
 import {usePostStore} from '@/stores/posts'
 import {useToastStore} from '@/stores/toasts'
-import {RouteActionList} from '@/router/actions'
 import PostForm from '@/components/PostForm.vue'
 
 const router = useRouter()
 const route = useRoute()
 
+const apis = inject(BotAPIsList)
+
 const loading = ref<boolean>(true)
 
 const post_store = usePostStore()
 const toasts = useToastStore()
-
-const post_api = new PostsApi(new Configuration({
-  basePath: import.meta.env.VITE_API_URL,
-}))
 
 const selected_id = ref<number>()
 
@@ -36,7 +32,7 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   try {
-    const {data} = await post_api.listPosts()
+    const {data} = await apis!.posts.listPosts()
     data.forEach(p => post_store.insert(p))
 
     loading.value = false
@@ -63,7 +59,7 @@ onMounted(async () => {
 
 watch(selected_id, (value) => {
   if (value) {
-    router.replace({query: {...route.query, actions: RouteActionList.EDIT_POST, post_id: value}})
+    router.replace({query: {...route.query, actions: 'post_edit', post_id: value}})
   }
 })
 
@@ -78,7 +74,7 @@ const search_needle = () => alert('search needle')
 </script>
 
 <template>
-  <PostForm v-if="selected_id && route.query.actions?.includes(RouteActionList.EDIT_POST)" :post_id="selected_id"/>
+  <PostForm v-if="selected_id && route.query.actions?.includes('post_edit')" :post_id="selected_id"/>
 
   <div class="container">
     <form action="#" @submit.prevent="search_needle" class="mt-4">

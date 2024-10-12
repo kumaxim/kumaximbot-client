@@ -1,16 +1,30 @@
 <script setup lang="ts">
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-import {faArrowRightFromBracket, faSquarePlus, faHouse} from '@fortawesome/free-solid-svg-icons'
+import {faArrowRightFromBracket, faArrowRightToBracket, faHouse, faSquarePlus} from '@fortawesome/free-solid-svg-icons'
 import {faCalendarDays} from '@fortawesome/free-regular-svg-icons'
-import {faTelegramPlane} from '@fortawesome/free-brands-svg-icons'
+import {faTelegramPlane, faYandex} from '@fortawesome/free-brands-svg-icons'
 import {Offcanvas} from 'bootstrap'
-import {onBeforeUnmount, onMounted, ref} from 'vue'
+import {inject, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {RouteActionList} from '@/router/actions'
+import type {User} from '@openapi/api-client'
+import {useAuthStore} from '@/stores/auth'
+import {BotAPIsList} from '@/symbols'
 import PostForm from '@/components/PostForm.vue'
 
 const route = useRoute()
 const router = useRouter()
+
+const apis = inject(BotAPIsList)
+
+const auth = useAuthStore()
+const myself = ref<User>()
+
+const logout = async () => {
+  if (auth.isLoggedIn) {
+    await apis!.users.removeOAuth2Token({access_token: auth.accessToken as string})
+    auth.clearToken()
+  }
+}
 
 const tgBotUsername = `@${import.meta.env.VITE_TELEGRAM_BOT_USERNAME}`
 const tgBotUrl = `https://t.me/${import.meta.env.VITE_TELEGRAM_BOT_USERNAME}`
@@ -39,10 +53,17 @@ onMounted(() => {
     })
   }
 })
+
+onUpdated(async () => {
+  if (auth.isLoggedIn && ! myself.value?.display_name) {
+    const {data: user} = await apis!.users.getUserInfo()
+    myself.value = user
+  }
+})
 </script>
 
 <template>
-  <PostForm v-if="route.query && route.query.actions?.includes(RouteActionList.ADD_POST)" />
+  <PostForm v-if="route.query && route.query.actions?.includes('post_add')" />
 
   <nav class="navbar navbar-expand-lg bg-body-tertiary border border-bottom">
     <div class="container">
@@ -73,7 +94,7 @@ onMounted(() => {
             </li>
             <li class="nav-item">
               <button type="button"
-                      @click.prevent="() => router.replace({query: {...route.query, actions: RouteActionList.ADD_POST}})"
+                      @click.prevent="() => router.replace({query: {...route.query, actions: 'post_add'}})"
                       class="btn btn-outline-success">
                 <FontAwesomeIcon :icon="faSquarePlus"/>
                 <span class="ms-2 d-inline d-lg-none">Новая команда</span>
@@ -86,11 +107,23 @@ onMounted(() => {
               </a>
             </li>
             <li :class="[offcanvasBodyShow ? 'position-absolute bottom-0 end-0 p-2' : 'nav-item']">
-              <button type="button"
-                      @click.prevent="() => router.replace({query: {...route.query, actions: RouteActionList.LOGIN}})"
+              <a v-if="auth.isLoggedIn" href="https://id.yandex.ru/" target="_blank" class="btn btn-outline-dark">
+                <FontAwesomeIcon class="text-danger" :icon="faYandex"/>
+                <span v-if="myself?.display_name" class="ms-1">{{ myself?.display_name }}</span>
+                <span v-else class="placeholder-glow">
+                  <span class="ms-2 placeholder bg-dark-subtle" style="width: 100px"></span>
+                </span>
+              </a>
+              <button v-else type="button"
+                      @click.prevent="() => router.replace({name: 'login.oauth2'})"
                       class="btn btn-outline-primary">
-                <FontAwesomeIcon :icon="faArrowRightFromBracket"/>
+                <FontAwesomeIcon :icon="faArrowRightToBracket"/>
                 <span class="ms-2">Войти</span>
+              </button>
+            </li>
+            <li v-if="auth.isLoggedIn" class="nav-item">
+              <button type="button" @click.prevent="logout" class="btn btn-outline-primary">
+                <FontAwesomeIcon :icon="faArrowRightFromBracket"/>
               </button>
             </li>
           </ul>
