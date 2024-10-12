@@ -3,10 +3,8 @@ import {inject, onBeforeMount, onMounted, ref, watch} from 'vue'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {faPenToSquare} from '@fortawesome/free-regular-svg-icons'
 import {useRoute, useRouter} from 'vue-router'
-import type {AxiosError, AxiosResponse} from 'axios'
 import {BotAPIsList} from '@/symbols'
 import {usePostStore} from '@/stores/posts'
-import {useToastStore} from '@/stores/toasts'
 import PostForm from '@/components/PostForm.vue'
 
 const router = useRouter()
@@ -17,7 +15,6 @@ const apis = inject(BotAPIsList)
 const loading = ref<boolean>(true)
 
 const post_store = usePostStore()
-const toasts = useToastStore()
 
 const selected_id = ref<number>()
 
@@ -31,29 +28,13 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  loading.value = true
+
   try {
     const {data} = await apis!.posts.listPosts()
     data.forEach(p => post_store.insert(p))
-
+  } finally {
     loading.value = false
-  } catch (err: any) {
-    if (err?.isAxiosError) {
-      const {request, response} = err as AxiosError
-
-      if (request) {
-        const {message, code} = err as AxiosError
-        toasts.error(`${code}: ${message ?? JSON.stringify(err)}`)
-      }
-
-      if (response) {
-        const {statusText, data} = response as AxiosResponse
-        toasts.error(`${statusText}: ${data?.detail ?? JSON.stringify(data)}`)
-      }
-
-      return
-    }
-
-    throw err
   }
 })
 
@@ -74,7 +55,7 @@ const search_needle = () => alert('search needle')
 </script>
 
 <template>
-  <PostForm v-if="selected_id && route.query.actions?.includes('post_edit')" :post_id="selected_id"/>
+  <PostForm v-if="selected_id && route.query.actions?.includes('post_edit')" v-model:post_id="selected_id"/>
 
   <div class="container">
     <form action="#" @submit.prevent="search_needle" class="mt-4">
@@ -109,7 +90,13 @@ const search_needle = () => alert('search needle')
             <div class="card">
               <div class="card-body position-relative">
                 <div class="d-flex justify-content-between">
-                  <h5 class="card-title">{{ post.command }}</h5>
+                  <div class="d-inline-flex flex-column mb-2">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <h6 class="card-subtitle text-body-tertiary">
+                      {{ post.command }}
+                      <template v-if="post.callback_query">-> [{{post.callback_query}}]</template>
+                    </h6>
+                  </div>
                   <a href="#" @click.prevent="selected_id = post.id" class="stretched-link">
                     <FontAwesomeIcon :icon="faPenToSquare"/>
                   </a>
