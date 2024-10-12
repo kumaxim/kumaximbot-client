@@ -758,7 +758,7 @@
     "/": {
       "get": {
         "summary": "Root",
-        "operationId": "root__get",
+        "operationId": "getHelloMessage",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -771,10 +771,32 @@
         }
       }
     },
+    "/assets": {
+      "get": {
+        "summary": "Assets",
+        "operationId": "listServerAssets",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response Listserverassets"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/robots.txt": {
       "get": {
         "summary": "Robots",
-        "operationId": "robots_robots_txt_get",
+        "operationId": "getRobotsTxtFile",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -869,6 +891,10 @@
             "type": "string",
             "title": "Command"
           },
+          "type": {
+            "$ref": "#/components/schemas/PostType",
+            "default": "text"
+          },
           "callback_query": {
             "anyOf": [
               {
@@ -960,7 +986,14 @@
             "title": "Refresh Token"
           },
           "scope": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Scope"
           }
         },
@@ -1013,6 +1046,10 @@
             "type": "string",
             "title": "Command"
           },
+          "type": {
+            "$ref": "#/components/schemas/PostType",
+            "default": "text"
+          },
           "callback_query": {
             "anyOf": [
               {
@@ -1041,6 +1078,15 @@
           "text"
         ],
         "title": "Post"
+      },
+      "PostType": {
+        "type": "string",
+        "enum": [
+          "text",
+          "document",
+          "contact"
+        ],
+        "title": "PostType"
       },
       "RefreshBody": {
         "properties": {
@@ -1093,6 +1139,10 @@
           "command": {
             "type": "string",
             "title": "Command"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PostType",
+            "default": "text"
           },
           "callback_query": {
             "anyOf": [
