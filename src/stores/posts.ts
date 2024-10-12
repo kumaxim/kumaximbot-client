@@ -19,7 +19,7 @@ export const usePostStore = defineStore('posts', () => {
     }
 
     const $reset = () => {
-        posts.value .length= 0
+        posts.value.length = 0
     }
 
     return {insert, replace, remove, $reset, posts}
