@@ -2,7 +2,6 @@
 import {onBeforeMount, onMounted, ref, inject} from 'vue'
 import {type TinyMCE} from 'tinymce'
 import TinyMCEditor from '@tinymce/tinymce-vue'
-import type {AxiosResponse, AxiosError} from 'axios'
 import type {Post} from '@openapi/api-client'
 import {usePostStore} from '@/stores/posts'
 import {useToastStore} from '@/stores/toasts'
@@ -11,6 +10,10 @@ import Modal from '@/components/twbs/Modal.vue'
 
 const props = defineProps<{
   post_id?: number
+}>()
+
+const emits = defineEmits<{
+  'update:post_id': [number | undefined]
 }>()
 
 const posts = usePostStore()
@@ -33,23 +36,16 @@ const editorConfig: Parameters<TinyMCE['init']>[0] = {
 }
 
 onBeforeMount(async () => {
+  loading.value = true
+
   if (props.post_id) {
     try {
       const {data} = await apis!.posts.getPost(props.post_id)
       singlePost.value = data
     } catch (err: any) {
-      if (err?.isAxiosError) {
-        const {response} = err as AxiosError
-        const {statusText, data} = response as AxiosResponse
-
-        toasts.error(`${statusText}: ${data?.detail ?? JSON.stringify(data)}`)
-
-        return
-      }
-
-      throw err
+      emits('update:post_id', undefined)
     } finally {
-      // loading.value = false
+      loading.value = false
     }
   }
 })
@@ -93,17 +89,6 @@ const post_submit = async () => {
 
   try {
     return props?.post_id ? await update() : await create()
-  } catch (err: any) {
-    if (err?.isAxiosError) {
-      const {response} = err as AxiosError
-      const {statusText, data} = response as AxiosResponse
-
-      toasts.error(`${statusText}: ${data?.detail ?? JSON.stringify(data)}`)
-
-      return
-    }
-
-    throw err
   } finally {
     loading.value = false
   }
@@ -125,17 +110,6 @@ const post_remove = async () => {
 
     posts.remove(singlePost.value)
     toasts.success(`Пост <span class="fw-bolder fst-italic">${singlePost.value.command}</span> успешно удален`)
-  } catch (err: any) {
-    if (err?.isAxiosError) {
-      const {response} = err as AxiosError
-      const {statusText, data} = response as AxiosResponse
-
-      toasts.error(`${statusText}: ${data?.detail ?? JSON.stringify(data)}`)
-
-      return
-    }
-
-    throw err
   } finally {
     loading.value = false
   }
