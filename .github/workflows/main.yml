@@ -1,0 +1,63 @@
+name: Yandex S3
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      YC_BACKEND_ACCESS_KEY: ${{ secrets.YC_BACKEND_ACCESS_KEY }}
+      YC_BACKEND_SECRET_KEY: ${{ secrets.YC_BACKEND_SECRET_KEY }}
+      TF_VAR_SERVICE_ACCOUNT_ID: ${{ secrets.TF_VAR_SERVICE_ACCOUNT_ID }}
+      YC_SERVICE_ACCOUNT_KEY_FILE: ${{ secrets.YC_SERVICE_ACCOUNT_KEY_FILE }}
+      YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+      YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Yarn
+      uses: threeal/setup-yarn-action@v2.0.0
+      with:
+        version: '3.8.3'
+        cache: false
+
+    - name: Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'yarn'
+
+    - name: OpenAPI SDK
+      run: yarn run openapi-sdk
+
+    - name: Building
+      env:
+        VITE_TELEGRAM_BOT_USERNAME: ${{ vars.VITE_TELEGRAM_BOT_USERNAME }}
+        VITE_API_URL:  ${{ vars.VITE_API_URL }}
+      run: yarn build
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.9.6
+
+    - id: init
+      run: terraform init -no-color -backend-config="access_key=$YC_BACKEND_ACCESS_KEY" -backend-config="secret_key=$YC_BACKEND_SECRET_KEY"
+
+    - id: validate
+      run: terraform validate -no-color
+
+    - id: plan
+      run: terraform plan -out=s3plan -no-color
+
+    - id: apply
+      run: terraform apply s3plan -no-color
