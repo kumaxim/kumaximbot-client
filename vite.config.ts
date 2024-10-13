@@ -14,5 +14,28 @@ export default defineConfig({
       '@openapi': fileURLToPath(new URL('./openapi', import.meta.url)),
       '~bootstrap': resolve(__dirname, 'node_modules/bootstrap'),
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('fortawesome')) {
+            return 'icons'
+          }
+
+          if (id.includes('tinymce/tinymce')) {
+            return 'tinymce/index'
+          }
+
+          if (id.includes('tinymce/plugins')) {
+            return 'tinymce/plugins'
+          }
+
+          if (id.includes('tinymce/themes')){
+            return 'tinymce/themes'
+          }
+        }
+      }
+    }
   }
 })
