@@ -28,7 +28,7 @@ provider "yandex" {
 }
 
 locals {
-  project_slug    = "kumaximbot-ui"
+  project_slug = "kumaximbot-ui"
 }
 
 variable "SERVICE_ACCOUNT_ID" {
@@ -50,7 +50,7 @@ resource "yandex_storage_bucket" "s3" {
   access_key = yandex_iam_service_account_static_access_key.sa-keys.access_key
   secret_key = yandex_iam_service_account_static_access_key.sa-keys.secret_key
   bucket     = local.project_slug
-  acl = "public-read"
+  acl        = "public-read"
 
   website {
     index_document = "index.html"
@@ -60,12 +60,12 @@ resource "yandex_storage_bucket" "s3" {
     allowed_methods = ["PUT", "POST", "GET", "DELETE"]
     allowed_headers = ["*"]
     allowed_origins = ["*"]
-    expose_headers = ["ETag"]
+    expose_headers  = ["ETag"]
   }
 }
 
 module "template_files" {
-  source = "github.com/hashicorp/terraform-template-dir.git"
+  source   = "github.com/hashicorp/terraform-template-dir.git"
   base_dir = "${path.module}/dist"
 }
 
@@ -74,11 +74,11 @@ resource "yandex_storage_object" "vuejs" {
   secret_key = yandex_iam_service_account_static_access_key.sa-keys.secret_key
   bucket     = yandex_storage_bucket.s3.bucket
 
-  for_each   = module.template_files.files
+  for_each = module.template_files.files
 
-  key        = each.key
-  source     = each.value.source_path
-  source_hash = each.value.digests.md5
+  key          = each.key
+  source       = each.value.source_path
+  source_hash  = each.value.digests.md5
   content_type = each.value.content_type
 }
 

@@ -1,6 +1,10 @@
 name: Yandex S3
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for triggering the workflow'
   push:
     branches:
       - master
