@@ -82,7 +82,7 @@ onUpdated(async () => {
         <div class="offcanvas-header">
           <h5 class="offcanvas-title">
             <FontAwesomeIcon :style="['color: #229ED9']" :icon="faTelegramPlane" size="xl"/>
-            <span class="ms-2 fw-normal">@kumaximbot</span>
+            <span class="ms-2 fw-normal">{{ tgBotUsername }}</span>
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
