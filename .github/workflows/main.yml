@@ -41,8 +41,8 @@ jobs:
 
     - name: Building
       env:
-        VITE_TELEGRAM_BOT_USERNAME: ${{ vars.VITE_TELEGRAM_BOT_USERNAME }}
-        VITE_API_URL:  ${{ vars.VITE_API_URL }}
+        VITE_TELEGRAM_BOT_USERNAME: ${{ vars.BOT_USERNAME }}
+        VITE_API_URL:  ${{ vars.API_URL }}
       run: yarn build
 
     - name: Set up Terraform

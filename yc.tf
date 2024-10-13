@@ -41,37 +41,6 @@ output "domain" {
   value = yandex_storage_bucket.s3.website_endpoint
 }
 
-resource "null_resource" "dependencies" {
-  triggers = {
-    yarn = filesha512("${path.module}/yarn.lock")
-  }
-
-  provisioner "local-exec" {
-    command = "yarn install --immutable --json"
-  }
-}
-
-resource "null_resource" "openapi" {
-  triggers = {
-    requirements = filesha512("${path.module}/openapi.json")
-  }
-
-  provisioner "local-exec" {
-    command = "yarn run openapi-sdk"
-  }
-
-  depends_on = [null_resource.dependencies]
-}
-
-resource "null_resource" "build" {
-  provisioner "local-exec" {
-    command = "yarn run build"
-  }
-
-  depends_on = [null_resource.dependencies, null_resource.openapi]
-}
-
-
 resource "yandex_iam_service_account_static_access_key" "sa-keys" {
   service_account_id = var.SERVICE_ACCOUNT_ID
   description        = "static access key for object storage"
