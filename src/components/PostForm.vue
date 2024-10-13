@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import {onBeforeMount, onMounted, ref, inject, watch} from 'vue'
-import {type TinyMCE} from 'tinymce'
-import TinyMCEditor from '@tinymce/tinymce-vue'
+import {onBeforeMount, ref, inject, watch} from 'vue'
 import {type Post, type Contact, PostType} from '@openapi/api-client'
 import {usePostStore} from '@/stores/posts'
 import {useToastStore} from '@/stores/toasts'
 import {BotAPIsList} from '@/symbols'
 import Modal from '@/components/twbs/Modal.vue'
+import TinyMCEditor from '@/components/TinyMCEditor.vue'
 
 const props = defineProps<{
   post_id?: number
@@ -29,14 +28,6 @@ const is_remove = ref<boolean>(false)
 const singlePost = ref<Post>({id: 0, command: '', title: '', text: ''})
 
 const apis = inject(BotAPIsList)
-
-const editorConfig: Parameters<TinyMCE['init']>[0] = {
-  plugins: ['lists', 'link', 'image', 'table', 'code', 'charmap', 'preview', 'fullscreen'],
-  // toolbar: ['lists', 'link', 'image', 'fullscreen'].join(' '),
-  toolbar: 'undo redo | fontsizeselect formatselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link image media fullscreen',
-  license_key: 'gpl',
-  branding: false,
-}
 
 watch(() => singlePost.value.type, async (postType) => {
   loading.value = true
@@ -73,16 +64,6 @@ onBeforeMount(async () => {
       loading.value = singlePost.value.type !== PostType.Text
     }
   }
-})
-
-onMounted(() => {
-  // Using TinyMCE with the Bootstrap framework
-  // @see https://www.tiny.cloud/docs/tinymce/latest/bootstrap-cloud/#usingtinymceinabootstrapdialog
-  document.addEventListener('focusin', (event) => {
-    if ((event.target as HTMLElement)?.closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root")) {
-      event.stopImmediatePropagation();
-    }
-  })
 })
 
 const create = async () => {
@@ -192,15 +173,7 @@ const post_remove = async () => {
       </div>
       <div v-if="singlePost.type === PostType.Text" class="mb-2">
         <label for="bot-command-textarea" class="form-label">Содержание</label>
-        <TinyMCEditor
-            id="bot-command-textarea"
-            api-key="no-api-key"
-            v-model.trim="singlePost.text"
-            tinymce-script-src="/node_modules/tinymce/tinymce.js"
-            :init="editorConfig"
-            :disabled="loading"
-            @init="loading = false"
-        />
+        <TinyMCEditor id="bot-command-textarea" v-model:text="singlePost.text" v-model:loading="loading" />
       </div>
       <div v-if="singlePost.type === PostType.Contact" class="mb-2">
         <label for="bot-contact-list-label" class="form-label">Контакты</label>
