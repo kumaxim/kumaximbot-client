@@ -74,6 +74,8 @@ const editorConfig: Parameters<TinyMCE['init']>[0] = {
   toolbar: 'undo redo | fontsizeselect formatselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link image media fullscreen',
   license_key: 'gpl',
   branding: false,
+  skin_url: 'default',
+  content_css: 'default',
 }
 
 onMounted(() => {
