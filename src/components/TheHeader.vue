@@ -131,8 +131,9 @@ onUpdated(async () => {
                 <span class="ms-2">Войти</span>
               </button>
             </li>
-            <li v-if="auth.isLoggedIn" class="nav-item">
+            <li v-if="auth.isLoggedIn" :class="[offcanvasBodyShow ? 'position-absolute bottom-0 start-0 p-2' : 'nav-item']">
               <button type="button" @click.prevent="logout" class="btn btn-outline-primary">
+                <span class="me-2" :class="{'d-none': ! offcanvasBodyShow}">Выход</span>
                 <FontAwesomeIcon :icon="faArrowRightFromBracket"/>
               </button>
             </li>
