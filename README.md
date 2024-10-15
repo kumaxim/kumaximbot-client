@@ -1,5 +1,7 @@
 # Web UI of Telegram bot @kumaximbot
 
+[![Yandex S3](https://github.com/kumaxim/kumaximbot-client/actions/workflows/main.yml/badge.svg)](https://github.com/kumaxim/kumaximbot-client/actions/workflows/main.yml)
+
 Web интерфейс Telegram бота [@kumaximbot](https://t.me/kumaximbot). Использованные технологии:
 [TypeScript](https://www.typescriptlang.org/) |
 [Vue.js](https://vuejs.org/) |
@@ -23,7 +25,7 @@ OpenAPI схема: [swagger-ui](https://d5djd46lehb5f0u4atqk.apigw.yandexcloud.
 
 
 ## Переменные окружения
-Скопируйте содержимое [example.env](env.example) в файл `.env` либо добавьте соответсвующее переменные в окружение: 
+Скопируйте содержимое [example.env](example.env) в файл `.env` либо добавьте соответсвующее переменные в окружение: 
 ```shell
 # Логин Telegram бота, полученный при регистрации в @BotFather
 VITE_TELEGRAM_BOT_USERNAME="<bot-username>"
