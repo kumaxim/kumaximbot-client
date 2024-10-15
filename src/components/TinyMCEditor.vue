@@ -33,6 +33,12 @@ import 'tinymce/plugins/charmap'
 import 'tinymce/plugins/preview'
 import 'tinymce/plugins/fullscreen'
 
+/* content UI CSS is required */
+import 'tinymce/skins/ui/oxide/content.js'
+
+/* The default content CSS can be changed or replaced with appropriate CSS for the editor content. */
+import 'tinymce/skins/content/default/content.js'
+
 import Editor from '@tinymce/tinymce-vue'
 
 const props = defineProps<{
