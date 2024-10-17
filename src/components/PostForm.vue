@@ -25,7 +25,7 @@ const loading = ref(true)
 
 const is_open = ref<boolean | undefined>(true)
 const is_remove = ref<boolean>(false)
-const singlePost = ref<Post>({id: 0, command: '', title: '', text: ''})
+const singlePost = ref<Post>({id: 0, command: '', title: '', type: PostType.Text, text: ''})
 
 const apis = inject(BotAPIsList)
 
@@ -52,7 +52,7 @@ watch(() => singlePost.value.type, async (postType) => {
 })
 
 onBeforeMount(async () => {
-  loading.value = true
+  loading.value = !! props.post_id
 
   if (props.post_id) {
     try {
