@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted} from 'vue'
+import {computed, ref, onMounted} from 'vue'
 import type {TinyMCE} from 'tinymce'
 
 /**
@@ -46,6 +46,8 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
+const initialized = ref<boolean>(false)
+
 const emits = defineEmits<{
   'update:text': [string]
   'update:loading': [boolean]
@@ -57,15 +59,6 @@ const lazyText = computed({
   },
   set(newValue) {
     emits('update:text', newValue)
-  }
-})
-
-const lazyLoading = computed({
-  get() {
-    return props.loading
-  },
-  set(newValue) {
-    emits('update:loading', props.text ? newValue : props.loading)
   }
 })
 
@@ -93,8 +86,8 @@ onMounted(() => {
   <Editor api-key="no-api-key"
           v-model.trim="lazyText"
           :init="editorConfig"
-          :disabled="lazyLoading"
-          @init="lazyLoading = false"/>
+          :disabled="initialized && loading"
+          @init="initialized = true"/>
 </template>
 
 <style scoped lang="scss">

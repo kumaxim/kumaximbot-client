@@ -173,7 +173,7 @@ const post_remove = async () => {
       </div>
       <div v-if="singlePost.type === PostType.Text" class="mb-2">
         <label for="bot-command-textarea" class="form-label">Содержание</label>
-        <TinyMCEditor id="bot-command-textarea" v-model:text="singlePost.text" v-model:loading="loading" />
+        <TinyMCEditor id="bot-command-textarea" v-model:text="singlePost.text" :loading="loading" />
       </div>
       <div v-if="singlePost.type === PostType.Contact" class="mb-2">
         <label for="bot-contact-list-label" class="form-label">Контакты</label>
