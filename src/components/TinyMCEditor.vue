@@ -65,7 +65,7 @@ const lazyLoading = computed({
     return props.loading
   },
   set(newValue) {
-    emits('update:loading', newValue)
+    emits('update:loading', props.text ? newValue : props.loading)
   }
 })
 

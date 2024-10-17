@@ -30,7 +30,7 @@ const singlePost = ref<Post>({id: 0, command: '', title: '', type: PostType.Text
 const apis = inject(BotAPIsList)
 
 watch(() => singlePost.value.type, async (postType) => {
-  loading.value = true
+  loading.value = !! props.post_id
 
   if (postType === PostType.Document) {
     try {
